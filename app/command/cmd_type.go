@@ -12,7 +12,7 @@ func HandleTypeCommand(args []string) {
 
 	shellCmd := ShellCommand(targetCmd)
 	if shellCmd.IsBuiltIn() {
-		fmt.Printf("%s is a shell builtin", shellCmd)
+		fmt.Printf("%s is a shell builtin\n", shellCmd)
 		return
 	}
 
