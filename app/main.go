@@ -36,7 +36,7 @@ func main() {
 			args := strings.Split(scanner.Text(), " ")
 			if len(args) == 1 {
 				handleCommand(ShellCommand(args[0]), []string{})
-				return
+				continue
 			}
 
 			handleCommand(ShellCommand(args[0]), args[1:])
