@@ -7,11 +7,13 @@ import (
 )
 
 func main() {
-	fmt.Print("$ ")
+	for {
+		fmt.Print("$ ")
 
-	scanner := bufio.NewScanner(os.Stdin)
-	if scanner.Scan() {
-		command := scanner.Text()
-		fmt.Printf("%s: command not found", command)
+		scanner := bufio.NewScanner(os.Stdin)
+		if scanner.Scan() {
+			command := scanner.Text()
+			fmt.Printf("%s: command not found\n", command)
+		}
 	}
 }
