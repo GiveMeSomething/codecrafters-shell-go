@@ -13,7 +13,7 @@ func HandleOtherCommand(cmd string, args []string) {
 		return
 	}
 
-	command := exec.Command(*foundCmd, args...)
+	command := exec.Command(cmd, args...)
 	command.Stdout = os.Stdout
 	command.Stderr = os.Stderr
 
