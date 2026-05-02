@@ -38,6 +38,9 @@ func HandleCommand(input string) {
 	case CommandType:
 		HandleTypeCommand(cmdArgs)
 		return
+	default:
+		HandleOtherCommand(string(cmd), cmdArgs)
+		return
 	}
 
 	fmt.Printf("%s: command not found\n", cmd)
