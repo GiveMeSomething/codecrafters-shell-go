@@ -2,9 +2,6 @@ package command
 
 import (
 	"fmt"
-	"os"
-	"path"
-	"strings"
 )
 
 func HandleTypeCommand(args []string) {
@@ -16,24 +13,11 @@ func HandleTypeCommand(args []string) {
 		return
 	}
 
-	pathEnv := os.Getenv("PATH")
-	folders := strings.SplitSeq(pathEnv, ":")
-	for folderName := range folders {
-		checkPath := path.Join(folderName, targetCmd)
-		fileInfo, err := os.Stat(checkPath)
-		if err != nil {
-			// Ignore error, continue checking
-			continue
-		}
-
-		if !IsExecAny(fileInfo.Mode()) {
-			// If the file exists but lacks execute permissions, skip it and continue to the next directory
-			continue
-		}
-
-		fmt.Printf("%s is %s\n", targetCmd, checkPath)
+	foundPath := SearchExecutable(targetCmd)
+	if foundPath == nil {
+		fmt.Printf("%s: not found\n", targetCmd)
 		return
 	}
 
-	fmt.Printf("%s: not found\n", targetCmd)
+	fmt.Printf("%s is %s\n", targetCmd, *foundPath)
 }
