@@ -12,7 +12,7 @@ func HandleOtherCommand(cmd string, args []string) {
 		return
 	}
 
-	command := exec.Command(cmd, args...)
+	command := exec.Command(*foundCmd, args...)
 	err := command.Run()
 	if err != nil {
 		fmt.Println(err)
