@@ -12,10 +12,11 @@ const (
 	CommandExit ShellCommand = "exit"
 	CommandEcho ShellCommand = "echo"
 	CommandType ShellCommand = "type"
+	CommandPwd  ShellCommand = "pwd"
 )
 
 func (cmd ShellCommand) IsBuiltIn() bool {
-	return cmd == CommandExit || cmd == CommandEcho || cmd == CommandType
+	return cmd == CommandExit || cmd == CommandEcho || cmd == CommandType || cmd == CommandPwd
 }
 
 func HandleCommand(input string) {
@@ -37,6 +38,9 @@ func HandleCommand(input string) {
 		return
 	case CommandType:
 		HandleTypeCommand(cmdArgs)
+		return
+	case CommandPwd:
+		HandlePwdCommand()
 		return
 	default:
 		HandleOtherCommand(string(cmd), cmdArgs)
