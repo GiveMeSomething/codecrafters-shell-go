@@ -63,7 +63,7 @@ func (state *ShellState) Cd(cdPath string) {
 		return
 	}
 
-	info, err := os.Stat(cdPath)
+	info, err := os.Stat(targetPath)
 	if err != nil {
 		// Print additional information when not exist
 		if errors.Is(err, os.ErrNotExist) {
