@@ -42,6 +42,12 @@ func ParseCommand(input string) []string {
 				continue
 			}
 
+			if backlashEnabled {
+				buffer.WriteRune(char)
+				backlashEnabled = false
+				continue
+			}
+
 			parseResult = append(parseResult, buffer.String())
 			buffer.Reset()
 			continue
