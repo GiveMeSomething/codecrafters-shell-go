@@ -88,6 +88,7 @@ func ParseCommand(input string) []string {
 		}
 
 		buffer.WriteRune(char)
+		backlashEnabled = false
 	}
 
 	if buffer.Len() != 0 {
