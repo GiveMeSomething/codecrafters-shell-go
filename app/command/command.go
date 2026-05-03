@@ -20,6 +20,46 @@ func (cmd ShellCommand) IsBuiltIn() bool {
 	return cmd == CommandExit || cmd == CommandEcho || cmd == CommandType || cmd == CommandPwd
 }
 
+func ParseCommand(input string) []string {
+	parseResult := []string{}
+	buffer := strings.Builder{}
+
+	singleQuoteOpen := false
+
+	for _, char := range input {
+		// Empty space usually mean the next part of the command
+		// Unless there's opening single/double quote
+		if char == ' ' {
+			// Ignore empty part of the command
+			if buffer.Len() == 0 {
+				continue
+			}
+
+			if singleQuoteOpen {
+				buffer.WriteRune(char)
+				continue
+			}
+
+			parseResult = append(parseResult, buffer.String())
+			buffer.Reset()
+			continue
+		}
+
+		if char == '\'' {
+			singleQuoteOpen = !singleQuoteOpen
+			continue
+		}
+
+		buffer.WriteRune(char)
+	}
+
+	if buffer.Len() != 0 {
+		parseResult = append(parseResult, buffer.String())
+	}
+
+	return parseResult
+}
+
 func HandleCommand(input string) {
 	args := strings.Split(input, " ")
 
