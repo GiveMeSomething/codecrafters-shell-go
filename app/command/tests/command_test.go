@@ -17,6 +17,13 @@ func TestParseCommand_HappyCase(t *testing.T) {
 
 		// Should understand single quote
 		"echo 'a very   long hello world'": {"echo", "a very   long hello world"},
+		"echo 'hello''world'":              {"echo", "helloworld"},
+		"echo hello''world":                {"echo", "helloworld"},
+
+		// Shoulder understand double quote
+		"echo \"hello    world\"": {"echo", "hello    world"},
+		"echo \"hello\"\"world\"": {"echo", "helloworld"},
+		"echo \"hello\"world":     {"echo", "helloworld"},
 	}
 
 	for input, expected := range resultMap {

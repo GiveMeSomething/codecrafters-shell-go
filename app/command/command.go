@@ -25,6 +25,7 @@ func ParseCommand(input string) []string {
 	buffer := strings.Builder{}
 
 	singleQuoteOpen := false
+	doubleQuoteOpen := false
 
 	for _, char := range input {
 		// Empty space usually mean the next part of the command
@@ -35,7 +36,7 @@ func ParseCommand(input string) []string {
 				continue
 			}
 
-			if singleQuoteOpen {
+			if singleQuoteOpen || doubleQuoteOpen {
 				buffer.WriteRune(char)
 				continue
 			}
@@ -46,7 +47,16 @@ func ParseCommand(input string) []string {
 		}
 
 		if char == '\'' {
+			if doubleQuoteOpen {
+				buffer.WriteRune(char)
+				continue
+			}
 			singleQuoteOpen = !singleQuoteOpen
+			continue
+		}
+
+		if char == '"' {
+			doubleQuoteOpen = !doubleQuoteOpen
 			continue
 		}
 
