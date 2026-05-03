@@ -78,6 +78,10 @@ func ParseCommand(input string) []string {
 		}
 
 		if char == '\\' {
+			if singleQuoteOpen {
+				buffer.WriteRune(char)
+				continue
+			}
 			if backlashEnabled {
 				buffer.WriteRune(char)
 				backlashEnabled = false
