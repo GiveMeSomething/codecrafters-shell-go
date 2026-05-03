@@ -26,6 +26,7 @@ func ParseCommand(input string) []string {
 
 	singleQuoteOpen := false
 	doubleQuoteOpen := false
+	backlashEnabled := false
 
 	for _, char := range input {
 		// Empty space usually mean the next part of the command
@@ -51,12 +52,27 @@ func ParseCommand(input string) []string {
 				buffer.WriteRune(char)
 				continue
 			}
+			if backlashEnabled {
+				buffer.WriteRune(char)
+				backlashEnabled = false
+				continue
+			}
 			singleQuoteOpen = !singleQuoteOpen
 			continue
 		}
 
 		if char == '"' {
+			if backlashEnabled {
+				buffer.WriteRune(char)
+				backlashEnabled = false
+				continue
+			}
 			doubleQuoteOpen = !doubleQuoteOpen
+			continue
+		}
+
+		if char == '\\' {
+			backlashEnabled = true
 			continue
 		}
 
