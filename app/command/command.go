@@ -78,6 +78,11 @@ func ParseCommand(input string) []string {
 		}
 
 		if char == '\\' {
+			if backlashEnabled {
+				buffer.WriteRune(char)
+				backlashEnabled = false
+				continue
+			}
 			backlashEnabled = true
 			continue
 		}
