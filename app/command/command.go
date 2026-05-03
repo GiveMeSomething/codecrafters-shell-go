@@ -54,11 +54,7 @@ func ParseCommand(input string) []string {
 		}
 
 		if char == '\'' {
-			if doubleQuoteOpen {
-				buffer.WriteRune(char)
-				continue
-			}
-			if backlashEnabled {
+			if doubleQuoteOpen || backlashEnabled {
 				buffer.WriteRune(char)
 				backlashEnabled = false
 				continue
@@ -68,7 +64,7 @@ func ParseCommand(input string) []string {
 		}
 
 		if char == '"' {
-			if backlashEnabled {
+			if singleQuoteOpen || backlashEnabled {
 				buffer.WriteRune(char)
 				backlashEnabled = false
 				continue
