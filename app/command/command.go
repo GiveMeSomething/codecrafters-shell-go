@@ -61,7 +61,7 @@ func ParseCommand(input string) []string {
 }
 
 func HandleCommand(input string) {
-	args := strings.Split(input, " ")
+	args := ParseCommand(input)
 
 	cmd := ShellCommand(args[0])
 	cmdArgs := func() []string {
