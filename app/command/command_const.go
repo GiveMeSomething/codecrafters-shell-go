@@ -18,3 +18,7 @@ func (cmd ShellCommand) IsBuiltIn() bool {
 		cmd == CommandPwd ||
 		cmd == CommandParse
 }
+
+func IsStdoutRedirect(symbol string) bool {
+	return symbol == ">" || symbol == "1>"
+}

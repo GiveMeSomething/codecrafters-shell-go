@@ -27,15 +27,27 @@ func TestParseCommand_HappyCase(t *testing.T) {
 	}
 
 	for input, expected := range resultMap {
-		output := command.ParseCommand(input)
-		if len(output) != len(expected) {
-			t.Errorf("output length mismatched. expected %+v. received %+v", expected, output)
+		output, err := command.ParseCommand(input)
+		if err != nil {
+			t.Error(err)
 			return
 		}
 
-		for i, value := range output {
-			if expected[i] != value {
-				t.Errorf("parse failed. expected %+v. received %+v", expected, output)
+		if len(output.Args)+1 != len(expected) {
+			t.Errorf("output length mismatched. expected %+v. received %+v", expected, output.Args)
+			return
+		}
+
+		for i, value := range expected {
+			// The first expected value should be the command
+			if i == 0 && value != string(output.Command) {
+				t.Errorf("parse failed. expected %+v. received %+v", expected, output.Args)
+				return
+			}
+
+			// The rest should be the arguments
+			if i != 0 && expected[i] != value {
+				t.Errorf("parse failed. expected %+v. received %+v", expected, output.Args)
 				return
 			}
 		}

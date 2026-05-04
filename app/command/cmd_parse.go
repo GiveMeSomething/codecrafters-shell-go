@@ -11,11 +11,16 @@ func HandleParseCommand(args []string) {
 		return
 	}
 
-	parseArgs := ParseCommand(args[0])
+	parsedCommand, err := ParseCommand(args[0])
+	if err != nil {
+		fmt.Printf("parse failed. error: %s\n", err)
+		return
+	}
+
 	output := strings.Builder{}
-	for i, arg := range parseArgs {
+	for i, arg := range parsedCommand.Args {
 		fmt.Fprintf(&output, "\"%s\"", arg)
-		if i != len(parseArgs)-1 {
+		if i != len(parsedCommand.Args)-1 {
 			output.WriteString(", ")
 		}
 	}

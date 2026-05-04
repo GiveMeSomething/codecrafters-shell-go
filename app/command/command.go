@@ -6,38 +6,34 @@ import (
 )
 
 func HandleCommand(input string) {
-	args := ParseCommand(input)
+	parsedCommand, err := ParseCommand(input)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	cmd := ShellCommand(args[0])
-	cmdArgs := func() []string {
-		if len(args) == 0 {
-			return []string{}
-		}
-		return args[1:]
-	}()
-
-	switch cmd {
+	switch parsedCommand.Command {
 	case CommandExit:
 		os.Exit(0)
 	case CommandEcho:
-		HandleEchoCommand(cmdArgs)
+		HandleEchoCommand(parsedCommand.Args)
 		return
 	case CommandType:
-		HandleTypeCommand(cmdArgs)
+		HandleTypeCommand(parsedCommand.Args)
 		return
 	case CommandPwd:
 		HandlePwdCommand()
 		return
 	case CommandCd:
-		HandleCdCommand(cmdArgs)
+		HandleCdCommand(parsedCommand.Args)
 		return
 	case CommandParse:
-		HandleParseCommand(cmdArgs)
+		HandleParseCommand(parsedCommand.Args)
 		return
 	default:
-		HandleOtherCommand(string(cmd), cmdArgs)
+		HandleOtherCommand(string(parsedCommand.Command), parsedCommand.Args)
 		return
 	}
 
-	fmt.Printf("%s: command not found\n", cmd)
+	fmt.Printf("%s: command not found\n", parsedCommand.Command)
 }
