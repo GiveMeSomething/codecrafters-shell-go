@@ -20,8 +20,6 @@ func ParseCommand(input string) (*CommandState, error) {
 	doubleQuoteOpen := false
 	backlashEnabled := false
 
-	stdout := os.Stdout
-
 	for _, char := range input {
 		// Empty space usually mean the next part of the command
 		// Unless there's opening single/double quote
@@ -89,7 +87,7 @@ func ParseCommand(input string) (*CommandState, error) {
 		parseResult = append(parseResult, buffer.String())
 	}
 
-	stdout, err := GetStdout(parseResult)
+	stdout, argCutAt, err := GetStdout(parseResult)
 	if err != nil {
 		return nil, err
 	}
@@ -104,12 +102,14 @@ func ParseCommand(input string) (*CommandState, error) {
 
 	return &CommandState{
 		Command: ShellCommand(parseResult[0]),
-		Args:    parseResult[1:],
+		Args:    parseResult[1:argCutAt],
 		Stdout:  stdout,
 	}, nil
 }
 
-func GetStdout(args []string) (*os.File, error) {
+// Return output, cut-off index, error
+// The cut-off index is to determine where is the command, and the rest of the redirection
+func GetStdout(args []string) (*os.File, int, error) {
 	for i, token := range args {
 		if !IsStdoutRedirect(token) {
 			continue
@@ -117,21 +117,21 @@ func GetStdout(args []string) (*os.File, error) {
 
 		// The next arg must be a path to output
 		if i+1 >= len(args) {
-			return nil, errors.New("Missing argument for redirection")
+			return nil, 0, errors.New("Missing argument for redirection")
 		}
 
 		outputPath, err := GetShellState().GetFinalPath(args[i+1])
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
-		redirectTo, err := os.OpenFile(outputPath, os.O_CREATE|os.O_APPEND, os.ModePerm)
+		redirectTo, err := os.OpenFile(outputPath, os.O_CREATE|os.O_APPEND|os.O_TRUNC|os.O_WRONLY, os.ModePerm)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
-		return redirectTo, nil
+		return redirectTo, i, nil
 	}
 
 	// Default to return to stdout
-	return os.Stdout, nil
+	return os.Stdout, len(args), nil
 }

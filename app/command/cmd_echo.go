@@ -6,5 +6,8 @@ import (
 )
 
 func HandleEchoCommand(cmd *CommandState) {
-	fmt.Println(strings.Join(cmd.Args, " "))
+	_, err := fmt.Fprintln(cmd.Stdout, strings.Join(cmd.Args, " "))
+	if err != nil {
+		fmt.Println(err)
+	}
 }

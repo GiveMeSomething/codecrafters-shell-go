@@ -22,7 +22,7 @@ func HandleCommand(input string) {
 		HandleTypeCommand(parsedCommand)
 		return
 	case CommandPwd:
-		HandlePwdCommand()
+		HandlePwdCommand(parsedCommand)
 		return
 	case CommandCd:
 		HandleCdCommand(parsedCommand)

@@ -4,6 +4,6 @@ import (
 	"fmt"
 )
 
-func HandlePwdCommand() {
-	fmt.Println(GetShellState().CurrentDir)
+func HandlePwdCommand(cmd *CommandState) {
+	fmt.Fprintln(cmd.Stdout, GetShellState().CurrentDir)
 }
