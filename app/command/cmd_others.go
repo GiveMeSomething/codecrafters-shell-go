@@ -17,8 +17,5 @@ func HandleOtherCommand(cmd *CommandState) {
 	command.Stdout = cmd.Stdout
 	command.Stderr = os.Stderr
 
-	err := command.Run()
-	if err != nil {
-		fmt.Println(err)
-	}
+	_ = command.Run()
 }
