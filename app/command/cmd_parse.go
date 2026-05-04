@@ -5,13 +5,13 @@ import (
 	"strings"
 )
 
-func HandleParseCommand(args []string) {
-	if len(args) != 1 {
+func HandleParseCommand(cmd *CommandState) {
+	if len(cmd.Args) != 1 {
 		fmt.Println("parse only accept 1 argument")
 		return
 	}
 
-	parsedCommand, err := ParseCommand(args[0])
+	parsedCommand, err := ParseCommand(cmd.Args[0])
 	if err != nil {
 		fmt.Printf("parse failed. error: %s\n", err)
 		return

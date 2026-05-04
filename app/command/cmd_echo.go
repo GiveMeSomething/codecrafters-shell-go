@@ -5,6 +5,6 @@ import (
 	"strings"
 )
 
-func HandleEchoCommand(args []string) {
-	fmt.Println(strings.Join(args, " "))
+func HandleEchoCommand(cmd *CommandState) {
+	fmt.Println(strings.Join(cmd.Args, " "))
 }

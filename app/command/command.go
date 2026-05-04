@@ -16,22 +16,22 @@ func HandleCommand(input string) {
 	case CommandExit:
 		os.Exit(0)
 	case CommandEcho:
-		HandleEchoCommand(parsedCommand.Args)
+		HandleEchoCommand(parsedCommand)
 		return
 	case CommandType:
-		HandleTypeCommand(parsedCommand.Args)
+		HandleTypeCommand(parsedCommand)
 		return
 	case CommandPwd:
 		HandlePwdCommand()
 		return
 	case CommandCd:
-		HandleCdCommand(parsedCommand.Args)
+		HandleCdCommand(parsedCommand)
 		return
 	case CommandParse:
-		HandleParseCommand(parsedCommand.Args)
+		HandleParseCommand(parsedCommand)
 		return
 	default:
-		HandleOtherCommand(string(parsedCommand.Command), parsedCommand.Args)
+		HandleOtherCommand(parsedCommand)
 		return
 	}
 

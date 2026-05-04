@@ -4,15 +4,13 @@ import (
 	"fmt"
 )
 
-func HandleTypeCommand(args []string) {
-	targetCmd := args[0]
-
-	shellCmd := ShellCommand(targetCmd)
-	if shellCmd.IsBuiltIn() {
-		fmt.Printf("%s is a shell builtin\n", shellCmd)
+func HandleTypeCommand(cmd *CommandState) {
+	if cmd.Command.IsBuiltIn() {
+		fmt.Printf("%s is a shell builtin\n", cmd.Command)
 		return
 	}
 
+	targetCmd := string(cmd.Command)
 	foundPath := SearchExecutable(targetCmd)
 	if foundPath == nil {
 		fmt.Printf("%s: not found\n", targetCmd)

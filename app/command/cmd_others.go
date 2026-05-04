@@ -6,15 +6,15 @@ import (
 	"os/exec"
 )
 
-func HandleOtherCommand(cmd string, args []string) {
-	foundCmd := SearchExecutable(cmd)
+func HandleOtherCommand(cmd *CommandState) {
+	foundCmd := SearchExecutable(string(cmd.Command))
 	if foundCmd == nil {
-		fmt.Printf("%s: command not found\n", cmd)
+		fmt.Printf("%s: command not found\n", string(cmd.Command))
 		return
 	}
 
-	command := exec.Command(cmd, args...)
-	command.Stdout = os.Stdout
+	command := exec.Command(string(cmd.Command), cmd.Args...)
+	command.Stdout = cmd.Stdout
 	command.Stderr = os.Stderr
 
 	err := command.Run()

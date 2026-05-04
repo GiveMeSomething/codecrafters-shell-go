@@ -2,10 +2,10 @@ package command
 
 import "fmt"
 
-func HandleCdCommand(args []string) {
-	if len(args) != 1 {
+func HandleCdCommand(cmd *CommandState) {
+	if len(cmd.Args) != 1 {
 		fmt.Println("cd accept only one parameter")
 		return
 	}
-	GetShellState().Cd(args[0])
+	GetShellState().Cd(cmd.Args[0])
 }
