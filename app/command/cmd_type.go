@@ -5,13 +5,13 @@ import (
 )
 
 func HandleTypeCommand(cmd *CommandState) {
-	targetCmd := string(cmd.Args[0])
-	if cmd.Command.IsBuiltIn() {
+	targetCmd := ShellCommand(cmd.Args[0])
+	if targetCmd.IsBuiltIn() {
 		fmt.Printf("%s is a shell builtin\n", targetCmd)
 		return
 	}
 
-	foundPath := SearchExecutable(targetCmd)
+	foundPath := SearchExecutable(string(targetCmd))
 	if foundPath == nil {
 		fmt.Printf("%s: not found\n", targetCmd)
 		return
