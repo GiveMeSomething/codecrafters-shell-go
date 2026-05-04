@@ -1,85 +1,90 @@
 package command
 
 import (
-	"errors"
-	"fmt"
 	"os"
-	"path"
 	"strings"
-	"sync"
 )
 
-// This is to control the current shell state
-
-type ShellState struct {
-	CurrentDir string
+type CommandState struct {
+	Command string
+	Args    []string
+	Stdout  *os.File
 }
 
-var lock sync.Mutex
+func ParseCommand(input string) []string {
+	parseResult := []string{}
+	buffer := strings.Builder{}
 
-var currentShellState *ShellState
+	singleQuoteOpen := false
+	doubleQuoteOpen := false
+	backlashEnabled := false
 
-func GetShellState() *ShellState {
-	if currentShellState == nil {
-		lock.Lock()
-		defer lock.Unlock()
+	for _, char := range input {
+		// Empty space usually mean the next part of the command
+		// Unless there's opening single/double quote
+		if char == ' ' {
+			// Ignore empty part of the command
+			if buffer.Len() == 0 {
+				continue
+			}
 
-		currentShellState = &ShellState{}
-		currentShellState.Init()
-	}
+			if singleQuoteOpen || doubleQuoteOpen {
+				buffer.WriteRune(char)
+				continue
+			}
 
-	return currentShellState
-}
+			if backlashEnabled {
+				buffer.WriteRune(char)
+				backlashEnabled = false
+				continue
+			}
 
-func (state *ShellState) Init() {
-	cwd, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	state.CurrentDir = cwd
-}
-
-func (state *ShellState) GetFinalPath(userInput string) (string, error) {
-	if strings.HasPrefix(userInput, "/") {
-		return userInput, nil
-	}
-
-	if strings.HasPrefix(userInput, "~") {
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			return "", err
+			parseResult = append(parseResult, buffer.String())
+			buffer.Reset()
+			continue
 		}
 
-		return path.Join(homeDir, strings.ReplaceAll(userInput, "~", ".")), nil
-	}
-
-	return path.Join(state.CurrentDir, userInput), nil
-}
-
-func (state *ShellState) Cd(cdPath string) {
-	// Handle absolute path
-	targetPath, err := state.GetFinalPath(cdPath)
-	if err != nil {
-		return
-	}
-
-	info, err := os.Stat(targetPath)
-	if err != nil {
-		// Print additional information when not exist
-		if errors.Is(err, os.ErrNotExist) {
-			fmt.Printf("cd: %s: No such file or directory\n", cdPath)
-			return
+		if char == '\'' {
+			if doubleQuoteOpen || backlashEnabled {
+				buffer.WriteRune(char)
+				backlashEnabled = false
+				continue
+			}
+			singleQuoteOpen = !singleQuoteOpen
+			continue
 		}
 
-		// Just skip the cd operation when there're error
-		fmt.Printf("cd failed: %s", err)
-		return
+		if char == '"' {
+			if singleQuoteOpen || backlashEnabled {
+				buffer.WriteRune(char)
+				backlashEnabled = false
+				continue
+			}
+			doubleQuoteOpen = !doubleQuoteOpen
+			continue
+		}
+
+		if char == '\\' {
+			if singleQuoteOpen {
+				buffer.WriteRune(char)
+				continue
+			}
+			if backlashEnabled {
+				buffer.WriteRune(char)
+				backlashEnabled = false
+				continue
+			}
+			backlashEnabled = true
+			continue
+		}
+
+		buffer.WriteRune(char)
+		backlashEnabled = false
 	}
 
-	// Must be a directory
-	if !info.IsDir() {
-		return
+	if buffer.Len() != 0 {
+		parseResult = append(parseResult, buffer.String())
 	}
 
-	state.CurrentDir = targetPath
+	return parseResult
 }
