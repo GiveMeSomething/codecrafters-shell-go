@@ -9,15 +9,20 @@ import (
 type ShellCommand string
 
 const (
-	CommandExit ShellCommand = "exit"
-	CommandEcho ShellCommand = "echo"
-	CommandType ShellCommand = "type"
-	CommandPwd  ShellCommand = "pwd"
-	CommandCd   ShellCommand = "cd"
+	CommandExit  ShellCommand = "exit"
+	CommandEcho  ShellCommand = "echo"
+	CommandType  ShellCommand = "type"
+	CommandPwd   ShellCommand = "pwd"
+	CommandCd    ShellCommand = "cd"
+	CommandParse ShellCommand = "parse"
 )
 
 func (cmd ShellCommand) IsBuiltIn() bool {
-	return cmd == CommandExit || cmd == CommandEcho || cmd == CommandType || cmd == CommandPwd
+	return cmd == CommandExit ||
+		cmd == CommandEcho ||
+		cmd == CommandType ||
+		cmd == CommandPwd ||
+		cmd == CommandParse
 }
 
 func ParseCommand(input string) []string {
@@ -123,6 +128,9 @@ func HandleCommand(input string) {
 		return
 	case CommandCd:
 		HandleCdCommand(cmdArgs)
+		return
+	case CommandParse:
+		HandleParseCommand(cmdArgs)
 		return
 	default:
 		HandleOtherCommand(string(cmd), cmdArgs)
