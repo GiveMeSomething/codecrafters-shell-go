@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"os"
 	"os/exec"
 )
 
@@ -15,7 +14,7 @@ func HandleOtherCommand(cmd *CommandState) {
 
 	command := exec.Command(string(cmd.Command), cmd.Args...)
 	command.Stdout = cmd.Stdout
-	command.Stderr = os.Stderr
+	command.Stderr = cmd.Stderr
 
 	_ = command.Run()
 }

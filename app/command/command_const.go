@@ -22,3 +22,7 @@ func (cmd ShellCommand) IsBuiltIn() bool {
 func IsStdoutRedirect(symbol string) bool {
 	return symbol == ">" || symbol == "1>"
 }
+
+func IsStderrRedirect(symbol string) bool {
+	return symbol == "2>"
+}

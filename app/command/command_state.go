@@ -10,6 +10,7 @@ type CommandState struct {
 	Command ShellCommand
 	Args    []string
 	Stdout  *os.File
+	Stderr  *os.File
 }
 
 func ParseCommand(input string) (*CommandState, error) {
@@ -87,7 +88,11 @@ func ParseCommand(input string) (*CommandState, error) {
 		parseResult = append(parseResult, buffer.String())
 	}
 
-	stdout, argCutAt, err := GetStdout(parseResult)
+	stdout, stdoutCutAt, err := GetStdout(parseResult)
+	if err != nil {
+		return nil, err
+	}
+	stderr, stderrCutAt, err := GetStderr(parseResult)
 	if err != nil {
 		return nil, err
 	}
@@ -97,13 +102,15 @@ func ParseCommand(input string) (*CommandState, error) {
 			Command: ShellCommand(parseResult[0]),
 			Args:    []string{},
 			Stdout:  stdout,
+			Stderr:  stderr,
 		}, nil
 	}
 
 	return &CommandState{
 		Command: ShellCommand(parseResult[0]),
-		Args:    parseResult[1:argCutAt],
+		Args:    parseResult[1:min(stdoutCutAt, stderrCutAt)],
 		Stdout:  stdout,
+		Stderr:  stderr,
 	}, nil
 }
 
@@ -134,4 +141,31 @@ func GetStdout(args []string) (*os.File, int, error) {
 
 	// Default to return to stdout
 	return os.Stdout, len(args), nil
+}
+
+func GetStderr(args []string) (*os.File, int, error) {
+	for i, token := range args {
+		if !IsStderrRedirect(token) {
+			continue
+		}
+
+		// The next arg must be a path to output
+		if i+1 >= len(args) {
+			return nil, 0, errors.New("Missing argument for redirection")
+		}
+
+		outputPath, err := GetShellState().GetFinalPath(args[i+1])
+		if err != nil {
+			return nil, 0, err
+		}
+
+		redirectTo, err := os.OpenFile(outputPath, os.O_CREATE|os.O_APPEND|os.O_TRUNC|os.O_WRONLY, os.ModePerm)
+		if err != nil {
+			return nil, 0, err
+		}
+		return redirectTo, i, nil
+	}
+
+	// Default to return to stdout
+	return os.Stderr, len(args), nil
 }
