@@ -24,7 +24,7 @@ func IsStdoutRedirect(symbol string) bool {
 }
 
 func IsStdoutAppend(symbol string) bool {
-	return symbol == ">>"
+	return symbol == ">>" || symbol == "1>>"
 }
 
 func IsStderrRedirect(symbol string) bool {
