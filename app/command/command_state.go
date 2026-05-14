@@ -118,7 +118,7 @@ func ParseCommand(input string) (*CommandState, error) {
 // The cut-off index is to determine where is the command, and the rest of the redirection
 func GetStdout(args []string) (*os.File, int, error) {
 	for i, token := range args {
-		if !IsStdoutRedirect(token) {
+		if !IsStdoutRedirect(token) && !IsStdoutAppend(token) {
 			continue
 		}
 
@@ -132,11 +132,21 @@ func GetStdout(args []string) (*os.File, int, error) {
 			return nil, 0, err
 		}
 
-		redirectTo, err := os.OpenFile(outputPath, os.O_CREATE|os.O_APPEND|os.O_TRUNC|os.O_WRONLY, os.ModePerm)
+		var fileMode = os.O_CREATE | os.O_APPEND | os.O_WRONLY
+
+		var redirectTo *os.File
+		if IsStderrRedirect(token) {
+			redirectTo, err = os.OpenFile(outputPath, fileMode|os.O_TRUNC, os.ModePerm)
+		} else {
+			// Handle append to stdout
+			redirectTo, err = os.OpenFile(outputPath, fileMode, os.ModePerm)
+		}
+
 		if err != nil {
 			return nil, 0, err
 		}
 		return redirectTo, i, nil
+
 	}
 
 	// Default to return to stdout

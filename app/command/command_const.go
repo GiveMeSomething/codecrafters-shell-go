@@ -23,6 +23,10 @@ func IsStdoutRedirect(symbol string) bool {
 	return symbol == ">" || symbol == "1>"
 }
 
+func IsStdoutAppend(symbol string) bool {
+	return symbol == ">>"
+}
+
 func IsStderrRedirect(symbol string) bool {
 	return symbol == "2>"
 }
