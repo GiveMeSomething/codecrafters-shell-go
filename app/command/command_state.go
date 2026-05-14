@@ -155,7 +155,7 @@ func GetStdout(args []string) (*os.File, int, error) {
 
 func GetStderr(args []string) (*os.File, int, error) {
 	for i, token := range args {
-		if !IsStderrRedirect(token) {
+		if !IsStderrRedirect(token) && !IsStderrAppend(token) {
 			continue
 		}
 
@@ -169,7 +169,15 @@ func GetStderr(args []string) (*os.File, int, error) {
 			return nil, 0, err
 		}
 
-		redirectTo, err := os.OpenFile(outputPath, os.O_CREATE|os.O_APPEND|os.O_TRUNC|os.O_WRONLY, os.ModePerm)
+		filemode := os.O_CREATE | os.O_APPEND | os.O_WRONLY
+
+		var redirectTo *os.File
+		if IsStderrRedirect(token) {
+			redirectTo, err = os.OpenFile(outputPath, filemode|os.O_TRUNC, os.ModePerm)
+		} else {
+			redirectTo, err = os.OpenFile(outputPath, filemode, os.ModePerm)
+		}
+
 		if err != nil {
 			return nil, 0, err
 		}

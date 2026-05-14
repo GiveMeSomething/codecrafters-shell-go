@@ -30,3 +30,7 @@ func IsStdoutAppend(symbol string) bool {
 func IsStderrRedirect(symbol string) bool {
 	return symbol == "2>"
 }
+
+func IsStderrAppend(symbol string) bool {
+	return symbol == "2>>"
+}
